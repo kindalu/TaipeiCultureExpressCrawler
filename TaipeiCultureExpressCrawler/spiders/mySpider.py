@@ -13,7 +13,7 @@ class mySpider(scrapy.Spider):
     #define how to generate request
     def start_requests(self):
         url_prefix = "http://cultureexpress.taipei/ViewEvent.aspx?id="
-        for event_num in range(2990, 3000):
+        for event_num in range(2500, 3300): #publish between 2014/11/26 ~ 2015/1/27
             url = url_prefix + str(event_num)
             yield scrapy.Request(url, self.parse)
 
