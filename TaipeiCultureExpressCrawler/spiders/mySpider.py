@@ -8,29 +8,12 @@ from TaipeiCultureExpressCrawler.items import EventItem
 
 class mySpider(scrapy.Spider):
     name = "culture_express_event"
-
-    #get_coordinates function code from
-    #http://stackoverflow.com/questions/15285691/googlemaps-api-address-to-coordinates-latitude-longitude
-    def get_coordinates(self, query, from_sensor=False):
-        googleGeocodeUrl = 'http://maps.googleapis.com/maps/api/geocode/json?'
-        params = {
-            'address': query,
-            'sensor': "true" if from_sensor else "false"
-        }
-        url = googleGeocodeUrl + urllib.urlencode(params)
-        json_response = urllib.urlopen(url)
-        response = simplejson.loads(json_response.read())
-        if response['results']:
-            location = response['results'][0]['geometry']['location']
-            latitude, longitude = location['lat'], location['lng']
-        else:
-            latitude, longitude = None, None
-        return latitude, longitude
+    all_items = []
 
     #define how to generate request
     def start_requests(self):
         url_prefix = "http://cultureexpress.taipei/ViewEvent.aspx?id="
-        for event_num in range(2999, 3000):
+        for event_num in range(2990, 3000):
             url = url_prefix + str(event_num)
             yield scrapy.Request(url, self.parse)
 
@@ -99,7 +82,36 @@ class mySpider(scrapy.Spider):
         else:
             item['event_link'] = ''
 
-        with codecs.open('out.json', 'wa') as f:
-            line = json.dumps(dict(item), indent=4, ensure_ascii=False) + "\n"
-            f.write(line)
+        self.all_items.append(item);
 
+
+    #write all items in json format to "out.json"
+    def closed(self, reason):
+        with codecs.open('result.json', 'w') as f:
+            f.write("{\n");
+            for item in self.all_items:
+                line = json.dumps(dict(item), indent=4, ensure_ascii=False)
+                if (item != self.all_items[-1]):
+                    line = line + ","
+                line = line + "\n"
+                f.write(line)
+            f.write("}\n");
+
+
+    #get_coordinates function code from
+    #http://stackoverflow.com/questions/15285691/googlemaps-api-address-to-coordinates-latitude-longitude
+    def get_coordinates(self, query, from_sensor=False):
+        googleGeocodeUrl = 'http://maps.googleapis.com/maps/api/geocode/json?'
+        params = {
+            'address': query,
+            'sensor': "true" if from_sensor else "false"
+        }
+        url = googleGeocodeUrl + urllib.urlencode(params)
+        json_response = urllib.urlopen(url)
+        response = simplejson.loads(json_response.read())
+        if response['results']:
+            location = response['results'][0]['geometry']['location']
+            latitude, longitude = location['lat'], location['lng']
+        else:
+            latitude, longitude = None, None
+        return latitude, longitude
