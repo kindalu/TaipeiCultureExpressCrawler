@@ -100,7 +100,6 @@ class mySpider(scrapy.Spider):
             item['event_link'] = ''
 
         with codecs.open('out.json', 'wa') as f:
-            line = json.dumps(dict(item), ensure_ascii=False) + "\n"
-#            print line
+            line = json.dumps(dict(item), indent=4, ensure_ascii=False) + "\n"
             f.write(line)
 
