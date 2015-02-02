@@ -29,10 +29,13 @@ class EventItem(scrapy.Item):
     performer = scrapy.Field() #演出單位
 
     #print response.css('div[class=content]  ul p')[4].css('::text')[0].extract().encode("utf-8")
-    event_period = scrapy.Field() #活動區間
+    event_period_from = scrapy.Field() #活動區間開始日期
+    event_period_to = scrapy.Field() #活動區間結束日期
 
     #print response.css('div[class=content]  ul p')[6].css('::text')[0].extract().encode("utf-8")
-    event_time = scrapy.Field() #活動場次
+    event_date_from = scrapy.Field() #活動場次開始日期
+    event_date_to = scrapy.Field() #活動場次結束日期
+    event_time = scrapy.Field() #活動場次時間的小時和分
 
     #print response.css('div[class=content]  ul p')[6].css('::text')[1].extract().encode("utf-8")
     event_location = scrapy.Field() #活動地點

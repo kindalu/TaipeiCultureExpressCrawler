@@ -13,7 +13,7 @@ class mySpider(scrapy.Spider):
     #define how to generate request
     def start_requests(self):
         url_prefix = "http://cultureexpress.taipei/ViewEvent.aspx?id="
-        for event_num in range(2500, 3300): #publish between 2014/11/26 ~ 2015/1/27
+        for event_num in range(2500, 3360): #publish between 2014/11/26 ~ 2015/2/2
             url = url_prefix + str(event_num)
             yield scrapy.Request(url, self.parse)
 
@@ -40,9 +40,16 @@ class mySpider(scrapy.Spider):
 
         item['performer'] = response.css('div[class=content]  ul p')[2].css('::text')[0].extract().encode("utf-8")
 
-        item['event_period'] = response.css('div[class=content]  ul p')[4].css('::text')[0].extract().encode("utf-8")
+        tmp = response.css('div[class=content]  ul p')[4].css('::text')[0].extract().encode("utf-8").split(" ~ ")
+        item['event_period_from'] = tmp[0]
+        item['event_period_to'] = tmp[1]
 
-        item['event_time'] = response.css('div[class=content]  ul p')[6].css('::text')[0].extract().encode("utf-8").split("：")[1]
+        tmp = response.css('div[class=content]  ul p')[6].css('::text')[0].extract().encode("utf-8").split("：")[1].split("，")
+
+        item['event_date_from'] = tmp[0].split(' ~ ')[0]
+        item['event_date_to'] = tmp[0].split(' ~ ')[1]
+        if(len(tmp) > 1):
+            item['event_time'] = tmp[1]
 
         item['event_location'] = response.css('div[class=content] ul p')[6].css('::text')[1].extract().encode("utf-8").split("：")[1]
         item['event_address'] = response.css('div[class=content] ul p')[6].css('::text')[2].extract().encode("utf-8").split("：")[1]
