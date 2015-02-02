@@ -95,14 +95,14 @@ class mySpider(scrapy.Spider):
     #write all items in json format to "out.json"
     def closed(self, reason):
         with codecs.open('result.json', 'w') as f:
-            f.write("{\n");
+            f.write("[\n");
             for item in self.all_items:
                 line = json.dumps(dict(item), indent=4, ensure_ascii=False)
                 if (item != self.all_items[-1]):
                     line = line + ","
                 line = line + "\n"
                 f.write(line)
-            f.write("}\n");
+            f.write("]\n");
 
 
     #get_coordinates function code from
