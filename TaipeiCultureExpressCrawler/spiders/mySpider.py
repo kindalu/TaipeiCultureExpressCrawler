@@ -13,7 +13,7 @@ class mySpider(scrapy.Spider):
     #define how to generate request
     def start_requests(self):
         url_prefix = "http://cultureexpress.taipei/ViewEvent.aspx?id="
-        for event_num in range(2500, 3360): #publish between 2014/11/26 ~ 2015/2/2
+        for event_num in range(2500, 3400): #publish between 2014/11/26 ~ 2015/2/2
             url = url_prefix + str(event_num)
             yield scrapy.Request(url, self.parse)
 
@@ -116,9 +116,17 @@ class mySpider(scrapy.Spider):
         url = googleGeocodeUrl + urllib.urlencode(params)
         json_response = urllib.urlopen(url)
         response = simplejson.loads(json_response.read())
+        for i in range(0, 30): #retry for failed request
+            if response['results']:
+                break
+            else:
+                json_response = urllib.urlopen(url)
+                response = simplejson.loads(json_response.read())
+
         if response['results']:
             location = response['results'][0]['geometry']['location']
             latitude, longitude = location['lat'], location['lng']
         else:
             latitude, longitude = None, None
+
         return latitude, longitude
